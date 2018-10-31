@@ -1,0 +1,23 @@
+Komunikacja TCP:
+Serwer odbiera porcje danych do momentu, aż wszystkie zostaną odebrane. 
+W przypadku przyjmowania mniejszej porcji danych niż została wysłana serwer dzieli ją na części i odbiera do momentu, aż cała porcja zostanie odebrana.
+Gdy serwer ma możliwość przyjęcia większej porcji danych niż została wysłana to przyjęta zostaje jedna cała wiadomość lub więcej, jeśli podczas oczekiwania na rozpoczęcie odbierania zostało wysłane więcej wiadomości.
+Innymi słowy serwer odczytuje z bufora wszystko, co jest w stanie (limit odbieranych jednorazowo danych).
+
+Gdy serwer odczytuje wiadomości szybciej niż są wysyłane, to jest zmuszony do oczekiwania na program kliencki.
+
+Klient wysyła dane, bez względu na to, czy serwer je odebrał. Dzieje się tak aż do momentu zapełnienia bufora (wielkość rzędu MB).
+W takim wypadku klient czeka na zwolnienie wystarczającej ilości miejsca w buforze, żeby porcja danych jaką wysyła zmieściła się w nim. Zatem wielkość wysyłanej porcji danych nie ma znaczenia, w czasie, gdy w buforze znajduje się dość miejsca do wysłania danej porcji.
+
+Żadna porcja danych nie jest utracona.
+
+Komunikacja UDP:
+Podobnie jak w przypadku połączenia strumieniowego, serwer odczytuje dane, aż wszystkie, które znajdują się w buforze zostaną odczytane. Jednak nie wszystkie porcje danych są odczytywane, jeśli serwer odbiera dane w zbyt wolnym tempie. Niektóre z nich są wtedy tracone.
+
+Część danych jest również tracona jeśli bufor serwera jest mniejszy niż bufor klienta. Serwer odczytuje dokładnie tyle komunikatów ile jest wysłanych (jeśli działa z podobną bądź większą szybkością niż klient), jednak w przypadku zbyt małego bufora nie są one dzielone, tylko zostają obcięte do rozmiaru, jaki serwer odbiera. Pozostała część danych jest tracona.
+
+Jeśli dane są wysyłane z podobną szybkością, z jaką są odczytywane, to serwer odbiera wszystkie. W przypadku większej szybkości serwera niż programu klienckiego serwer oczekuje na odbiór danych (podobnie jak w przypadku protokołu TCP).
+
+Klient wysyła dane niezależnie od tego, czy są odczytywane.
+
+Maksymalna porcja danych to 63 kB 995 B. Jeśli klient chce wysłać większą porcję, to jest mu to uniemożliwiane i funkcja sendto zwraca błąd.

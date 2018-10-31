@@ -1,0 +1,15 @@
+HELO host.example.com
+MAIL FROM:<>
+RCPT TO:<pawel.kedzior@uj.edu.pl>
+DATA
+From: [Paweł] <>
+To: <pawel.kedzior@uj.edu.pl>
+Date: pon, 08 maj 2017 22:06:34 +0200
+Subject: Próba
+Content-Type: text/plain; charset=UTF-8
+
+Siemandero! wysyłam wiadomość. 
+
+
+.
+QUIT

@@ -1,0 +1,65 @@
+W tym zadaniu chciałbym się zająć analizą webAPI serwisu YouTube.
+
+Program powinien przeszukiwać stronę wybranego użytkownika youtube i pobierać co pewien czas informacje o filmach dodanych przez niego. Następnie powinien porównać listę filmów na stronie tego użytkownika, z listą poprzednio pobraną i w przypadku dodania nowego filmu (nowych filmów) przez wybranego użytkownika pobrać podstawowe informacje o nim (nich) i jego miniaturkę (ich miniaturki) oraz link(i) do filmu (filmów) i zapisać je na dysku. 
+
+W tym celu należy wykorzystać YouTube Data API. 
+
+W celu wykorzystania tego API, programista musi posiadać konto Google. Jest ono wymagane aby uzyskać dostęp do konsoli programistycznej google, samego API oraz w celu zarejestrowania aplikacji.
+
+Aby korzystać z aplikacji w celu, jaki wymieniono powyżej użytkownik nie potrzebuje konta google.
+
+Proponowana aplikacja jest w języku java.
+
+W celu wyboru kanałów do śledzenia użytkownik musi je najpierw wyszukać przy pomocy metody
+
+youtube.search().list(String)
+
+o odpowiednich parametrach. Ustawianych przy pomocy metod:
+
+YouTube.Search.List.setQ(String) (nazwa kanału)
+YouTube.Search.List.setType("channel");
+
+Następnie wybiera kanał do śledzenia. Dalszą część wykonuje aplikacja.
+
+Aplikacja zapamiętuje pole id.channelID danego kanału i wykorzystuje jego wartość do wyszukania playlisty "uploads" dla danego kanału. Wyszukiwanie to odbywa się przy pomocy metody:
+
+youtube.channels().list("snippet,contentDetails")
+
+do której, przed wywołaniem zapytania ustawia zapamiętane ID kanału, przy pomocy metody:
+
+YouTube.Channels.List.setId(String) (ID kanału)
+
+Z otrzymanego wyniku zapytania program zapamiętuje wartość pola "uploads" klasy "relatedPlaylists" zawartej w klasie "contentDetails" dla danego kanału. 
+
+Na podstawie powyższych danych co określony odcinek czasu wykonuje wyszukiwanie.
+
+Wyszukiwanie polega na wczytaniu danych wszystkich elementów playlisty przy pomocy metody:
+
+youtube.playlistItems().list("snippet,contentDetails")
+
+Zapytanie tak otrzymane modyfikujemy podając ID playlisty otrzymane uprzednio. Modyfikacja przebiega następująco:
+
+YouTube.PlaylistItems.List.setPlaylistId(String) (ID playlisty)
+
+W ten sposób otrzymujemy listę filmów danego kanału. Wystarczy już tylko porównać obecną listę z poprzednio zapisaną, żeby dowiedzieć się, czy został dodany nowy film. Jeśli został dodany to program zapamiętuje informacje o filmie, którymi użytkownik jest zainteresowany. W tym celu program wybiera odpowiedni film z listy, następnie wybiera jego pole snippet i zapamiętuje pola, zawierające informacje o filmie: tytuł (pole title), opis (pole description), data dodania (pole publishedAt), link do filmu oraz miniaturę o wybranym przez użytkownika rozmiarze (wartość pola url, w odpowiednim polu klasy thumbnails). Oprócz tego program zapamiętuje ID filmu (klasa contentDetails.videoId), w przypadku chęci odtworzenia go przez użytkownika.
+
+
+W celu uściślenia: każde zapytanie jest wywoływane metodą execute() wywoływaną na instancji klasy zapytania. Podobnie z metodami zawierającymi parametry wyszukiwania.
+
+Każde zapytanie zwraca obiekt klasy [ListaWyszukiwana]Response, np.: PlaylistItemListResponse. Struktura każdej z tych klas wygląda mniej więcej następująco:
+
+{
+  "kind": "youtube#playlistItemListResponse",
+  "etag": etag,
+  "nextPageToken": string,
+  "prevPageToken": string,
+  "pageInfo": {
+    "totalResults": integer,
+    "resultsPerPage": integer
+  },
+  "items": [
+    playlistItem Resource
+  ]
+}
+
+Powyższa struktura odpowiada odpowiedzi na zapytanie o PlaylistItemList. Na odpowiedzi można wykorzystwać funkcje takie jak na łańcuchu znaków, wystarczy ją przekonwertować.
